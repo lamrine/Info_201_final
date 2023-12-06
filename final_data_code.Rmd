@@ -1,0 +1,111 @@
+---
+title: "info_201_final_data"
+output: html_document
+date: "2023-11-29"
+---
+```{r}
+library(dplyr)
+getwd()
+directory_path <- "/Users/luke/Desktop/Info201/final_project"
+files <- list.files(directory_path)
+```
+
+```{r}
+voting_turnout_2020 <- read.csv("2020_voter_turnout.csv")
+head(voting_turnout_2020, n = 3)
+simple_2020_turnout <- voting_turnout_2020[, c("STATE", "STATE_ABV", "TOTAL_BALLOTS_COUNTED", "VAP")]
+```
+
+```{r}
+voting_turnout_2016 <- read.csv("2016_voter_turnout.csv")
+head(voting_turnout_2016, n = 3)
+simple_2016_turnout <- voting_turnout_2016[, c("STATE", "STATE_ABV", "TOTAL_BALLOTS_COUNTED", "VAP")]
+```
+
+```{r}
+election_comparison <- rbind(simple_2016_turnout, simple_2020_turnout)
+election_comparison <- election_comparison %>%
+  filter(!(STATE == "United States"))
+election_comparison <- select(election_comparison, "STATE", "TOTAL_BALLOTS_COUNTED", "VAP")
+```
+
+```{r}
+broadband_2020 <- read.csv("broadband_2020_good_!.csv")
+broadband_2020$YEAR <- 2020
+broadband_2020 <- broadband_2020 %>%
+  filter(!(STATE == "Puerto Rico"))
+```
+
+```{r}
+broadband_2016 <- read.csv("broadband_2016_good.csv")
+broadband_2016$YEAR <- 2016
+library(dplyr)
+
+broadband_2016 <- broadband_2016 %>%
+  filter(!(STATE == "Puerto Rico"))
+
+```
+
+```{r}
+library(dplyr)
+broadband_data <- rbind(broadband_2016, broadband_2020)
+broadband_data <- arrange(broadband_data, (STATE))
+
+```
+
+```{r}
+voter_broadband <- merge(broadband_data, election_comparison, by = "STATE")
+voter_broadband$Broad_access <- as.numeric(voter_broadband$Broad_access)
+voter_broadband
+voter_broadband <- voter_broadband %>%
+  mutate(group = rep(1:((nrow(.) - 1) %/% 4 + 1), each = 4))
+
+# Filter out every second and third row for each group
+voter_broadband <- voter_broadband %>%
+  group_by(group) %>%
+  slice(-c(2, 3)) %>%
+  ungroup() %>%
+  select(-group)
+head(voter_broadband, n = 5)
+```
+```{r}
+library(dplyr)
+
+election_avg <- voter_broadband %>%
+  mutate(voter_percentage = round((TOTAL_BALLOTS_COUNTED / VAP) * 100, 2))
+election_avg
+
+df_sorted <- election_avg %>%
+  arrange(Broad_access)
+highest_5 <- tail(df_sorted, n = 5)
+highest_5
+lowest_5 <- head(df_sorted, n = 5)
+lowest_5
+
+summarization_df <- rbind(highest_5, lowest_5)
+summarization_df
+```
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## R Markdown
+
+This is an R Markdown document. Markdown is a simple formatting syntax for authoring HTML, PDF, and MS Word documents. For more details on using R Markdown see <http://rmarkdown.rstudio.com>.
+
+When you click the **Knit** button a document will be generated that includes both content as well as the output of any embedded R code chunks within the document. You can embed an R code chunk like this:
+
+```{r cars}
+summary(cars)
+```
+
+## Including Plots
+
+You can also embed plots, for example:
+
+```{r pressure, echo=FALSE}
+plot(pressure)
+```
+
+Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.
