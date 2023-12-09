@@ -5,57 +5,61 @@ date: "2023-12-09"
 ---
 # Data Documentation
 ## Data sources
-US Voting Turnout: 
-2020_voter_turnout.csv - https://election.lab.ufl.edu/data-archive/national/ (Filter by year, 2020)
-2016_voter_turnout.csv - https://election.lab.ufl.edu/data-archive/national/ (Filter by year, 2016)
-US Broadband Access
-broadband_2020_good_!.csv - https://www.statista.com/statistics/185535/us-household-broadband-internet-connection-usage-by-state/
+### US Voting Turnout: 
+1. 2020_voter_turnout.csv - https://election.lab.ufl.edu/data-archive/national/ (Filter by year, 2020)
+2. 2016_voter_turnout.csv - https://election.lab.ufl.edu/data-archive/national/ (Filter by year, 2016)
+
+### US Broadband Access
+1. broadband_2020_good_!.csv - https://www.statista.com/statistics/185535/us-household-broadband-internet-connection-usage-by-state/
 Dataset of 2019 braodband connection by US state in 2019, provided by German analytic firm Statista.
-broadband_2016_good.csv - https://www.statista.com/statistics/185535/us-household-broadband-internet-connection-usage-by-state/
+2. broadband_2016_good.csv - https://www.statista.com/statistics/185535/us-household-broadband-internet-connection-usage-by-state/
 Based off of 2019 dataframe, with updated information for this year provided by the FCC (no existing csv file online of this period.)
-regions.csv - 
-WA counties data
-wabroadband.csv - https://www.fcc.gov/form-477-county-data-internet-access-services (second data set on the page)
+
+#### US Regions
+regions.csv - https://www.kaggle.com/datasets/omer2040/usa-states-to-region
+
+### WA counties broadband
+1. wabroadband.csv - https://www.fcc.gov/form-477-county-data-internet-access-services (second data set on the page)
 Data of Broadband access by county for Washington state (filtered in the code)
-vap2016.csv - https://data.census.gov/table/ACSDP5Y2016.DP05?q=voters%20in%20Washington&g=040XX00US53$0500000&tp=true (more tools --> download as csv)
-Voting age percentage of Washington state,  2016
-vap2020.csv -  https://data.census.gov/table/ACSDP5Y2020.DP05?q=voters%20in%20Washington&g=040XX00US53$0500000&tp=true (more tools --> download as csv)
-Voting age percentage of Washington state,  2020
-waturnout.csv - https://dataverse.harvard.edu/dataset.xhtml?persistentId=doi:10.7910/DVN/VOQCHQ
+
+### WA counties voter turnout
+1. vap2016.csv - https://data.census.gov/table/ACSDP5Y2016.DP05?q=voters%20in%20Washington&g=040XX00US53$0500000&tp=true (more tools --> download as csv)
+Voting age population of Washington state,  2016
+2. vap2020.csv -  https://data.census.gov/table/ACSDP5Y2020.DP05?q=voters%20in%20Washington&g=040XX00US53$0500000&tp=true (more tools --> download as csv)
+Voting age population of Washington state,  2020
+3. waturnout.csv - https://dataverse.harvard.edu/dataset.xhtml?persistentId=doi:10.7910/DVN/VOQCHQ
 Voting turnout, Washington state
 
 ## Variables
-Year: year of election or broadband study.
-State: State of data collection, United States.
-Broad_access: Homes in the state with broadband access.
-VAP: Voting aged population of each state.
-Total_ballots_counted: Ballots counted in each state for each election cycle. 
+### US:
+
+- Year: year of election or broadband study.
+- State: State of data collection, United States.
+- Broad_access: percentage of homes in the state with broadband access.
+- VAP: Voting aged population of each state.
+- Total_ballots_counted: Ballots counted in each state for each election cycle.
+- Region: geographic region of the U.S.
+- Division: geographic subregion of the U.S.
+- percent_turnout: percentage of voter turnout
+
+### WA:
+
+- year: year of election or broadband study
+- county_name: county in WA
+- connections: total broadband connections
+- votingpop: voting age population
+- population: population of county
+- total_turnout: ballots/votes counted from the county
+- percent_turnout: percentage rate of voter turnout
+- Broad_access: broadband access as a percentage
 
 # Data Summary
 After cleaning the data, there were no missing values for the columns this project was concerned with.
-In the final combined dataset, there are 100 rows (50 states with two years of data) and the relevant columns are states, year, total ballots counted, voting aged poplation of each state, and total ballots counted.
 
+In the final combined states dataset, there are 100 rows (50 states with two years of data) and the relevant columns are states, year, total ballots counted, voting aged poplation of each state, and total ballots counted.
+
+In the final combined counties dataset, there are 78 rows (39 states with data from two different years) and the relevant columns are year, county_name, connections, votingpop, population, total_turnout, percent-turnout, and Broad_access.
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
 ```
-
-## R Markdown
-
-This is an R Markdown document. Markdown is a simple formatting syntax for authoring HTML, PDF, and MS Word documents. For more details on using R Markdown see <http://rmarkdown.rstudio.com>.
-
-When you click the **Knit** button a document will be generated that includes both content as well as the output of any embedded R code chunks within the document. You can embed an R code chunk like this:
-
-```{r cars}
-summary(cars)
-```
-
-## Including Plots
-
-You can also embed plots, for example:
-
-```{r pressure, echo=FALSE}
-plot(pressure)
-```
-
-Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.
