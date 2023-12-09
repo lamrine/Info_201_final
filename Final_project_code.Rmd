@@ -1,0 +1,386 @@
+---
+title: "Final_project"
+output: html_document
+date: "2023-12-09"
+---
+## Introduction
+Within the past two decades, broadband access has rapidly expanded to include over 300 million users within the United States, meaning now more than ever, digital technologies are changing the way we seek and share information. From meal-prep recipes to YouTube tutorials on changing car tires, the Internet is a diverse network of information resources, especially in disseminating news and political information. Researchers have paid close attention to this phenomenon, exploring the potential for political information to spark mobilization. The resurgence of the Black Lives Matter movement at the height of the pandemic is one such example of how social media inspired action amongst the public by amplifying the stories of Ahmed Arbery, Breonna Taylor, and George Floyd.
+
+However, even with the advent of broadband availability, we still face a digital divide that renders political information highly inaccessible to low-income, rural communities. Households who have little to no broadband access are unable to access the resources and information that sustain an active democracy. This may include vital information about local election processes, ballot initiatives, and up-to-date candidate information. Many disabled voters or rural communities need broadband service in order to even register as a voter, yet service providers and policymakers alike have made few strides to narrow this gap. Service providers are especially unwilling because rural communities are less populated, hence they are less profitable regions to expand into. 
+
+This may also be compounded by restrictive voting laws, which place additional barriers to voting by creating narrow deadlines for turning in ballots and stricter criteria for ballot verification. Without up-to-date information, voters may accidentally invalidate their own ballots or miss the submission window. Having access to broadband service would allow voters to remain informed of their local election processes so that they may fully exercise their civic responsibilities and remain engaged participants in our democracy.
+
+This brings us to our research questions, in which we aim to explore the relationship between broadband access and voter turnout. Our data analysis is guided by the following questions:
+How are changes in US broadband access reflected in changes in US voter turnout results over the years?
+How do the top five and bottom five broadband access states compare in terms of voter turnout?
+What regional patterns do we find across broadband access and voter turnout?
+Is there a similar correlation between broadband access and voter turnout in Washington counties?
+
+By answering these questions, we hope to identify how the digital divide intersects with political participation. The results of our analysis will be important to broadband service providers and policymakers as they consider the importance of broadband access to maintaining democracy.
+
+## Data
+In total, we used nine external datasets to encompass voter turnout and broadband data across the United States and Washington counties, respectively. Four of these datasets include data for each state: 2016 voter turnout, 2020 voter turnout, 2016 broadband access, and 2020 broadband access, and were supplemented with a dataset that contained geographic regions of the United States. These five datasets were eventually merged into one dataset for the United States, The other four datasets include the same data (not including regions) for each county in Washington and were also merged into one. 
+
+Our voter turnout data for each state came from the University of Florida’s Election Lab, a group of political scientists within the University of Florida who aim to better understand how elections in the United States are shaped by the electorate, and how the voting process can be improved across the nation through statistical analysis. The data collected from this organization is freely available for anyone to access and use. Organizations such as the Election Lab strive to make this type of information available to the general public in order to promote better accuracy and was collected by professors, students, and other professionals associated with the lab and the university. 
+
+Similarly, we used the MIT Election Lab’s voter turnout data on Washington counties. The MIT Election Lab shares similar goals, prioritizing non-partisan, data-driven election research to enhance democratic processes in the U.S. In line with their goals, they ensure that their data is free and accessible to use. We also used another dataset containing voting age populations and regular population data across Washington counties from the U.S. Census Bureau. While this data was freely available and comprehensive, it required much more cleaning due to its unique formatting. Nevertheless, since it came from the U.S. Census Bureau’s database, the data was reliable and accurate.
+
+For broadband access, we collected state data from the data gathering and visualization organization Statista. Although the website is subscription-based and therefore not as accessible to the general public as organizations such as the University of Florida Election Lab or MIT Election Lab, it is possible to obtain the data for free in limited formats. The data initially came in a .xsl format, so our first step in processing the data was transforming it into .csv so that it could be easily read into an R dataframe and much easier to merge with our voter turnout data. 
+
+Additionally, we found broadband data for Washington counties directly from the Federal Communications Commission, a government agency responsible for managing communications such as radio, television, and more recently, broadband access. The data is freely available and comprehensive, making it a reliable source of broadband data. 
+
+Overall, while the data we obtained across these sites were free and open to public use, the data from Statista seemed more protected in terms of reproduction than the other data. As the data comes from a private company, they retain more control of it, and, while using it for a school project such as this is acceptable, reproducing the work for more commercial purposes would require more explicit permissions from the company.
+
+In the state datasets, the population encompassed 50 states in the United States of America. Something that had to be sorted out before the data was ready to merge was the fact that the broadband access data included Puerto Rico initially, while the voter turnout had totals for the United States as a whole. These were extraneous variables to the scope of our study, and as they did not correspond to a value in the other dataset it was necessary to filter these values out before combining our data. Our samples were taken from 2016 and 2020, respectively, as these were key presidential elections and practicality-wise, state data for these elections were much easier to find.
+
+In the county datasets, the population encompassed all 39 Washington counties. By sampling from only the years 2016 and 2020, we ended up with 78 observations total (each row representing a county each year). Combining these datasets required significant cleaning, including renaming hard-to-read column names and removing unnecessary formatting. One issue that we noticed across both the state and county datasets was that some numeric variables were in character format, so we made sure to convert them into numbers before performing our data analysis.
+
+Our final US dataset includes the following columns: states, broadband access, year, total ballots counted, voting age population, state abbreviation, geographic region of the U.S., geographic division, and percent voter turnout. It contains a total of 100 observations (an observation for each state in 2016 and in 2020). We added in region and division as categorical variables in our final US dataset for further insight about regions of the U.S. While we did not use state abbreviation and geographic division in our analysis, we believe it may be helpful for others who use our dataset. Also, we calculated the percent voter turnout ourselves, dividing total ballots counted by voting age population, in order to get a better representation of proportional voter turnout rates. Without this context (ballots cast vs. ballots that could have been cast), the total ballots counted would not have been as effective or meaningful. 
+
+When coding with the data, these columns appear as “STATE”, “Broad_access”, “YEAR”, “TOTAL_BALLOTS_COUNTED”, “VAP”,  “Region”, “State.Code”, “Division”, and “percent_turnout”. The capitalized columns were from the initial .csv files for states, and that made it necessary to change our data for broadband access to ensure that the states column in that data matched. This step was one of the most critical of the entire dataframe setup operation, as we merged our data through the “STATE” column id. If this column was not identical between the two different dataframes, we would have not been able to merge the two dataframes together to plot our findings. While the renaming happened on the actual .csv file, we added the “YEAR” row to the broadband data in order for that category to appear on the final table. Including the year in the data was also a critical step, as it would be impossible to actually look at the two different rows for each state and understand the context without this piece of information.
+
+When we initially put together the final US dataset, we had trouble managing inaccurate duplicates. This made cleaning the final data frame necessary both for visual accuracy and appeal but for the visualization work that came later in the project. We first attempted to circumvent this issue by filtering out the two unwanted values for each state using a function, but then we later found a solution having to do with the merge parameters. Engaging in this process reminded us that even when our data seems correct, we need to be ready to consider different approaches to debugging an issue.
+
+We followed a similar process with our final Washington counties dataset, which included the following columns: county, year, total voter turnout, voting age population, broadband connections, percentage of county with broadband access, and voter turnout percentage. In the dataset, they appear as "year",  "county_name", "connections", "votingpop", "population", "total_turnout", "percent_turnout", and "Broad_access". As these datasets contained slightly different data points, we had to calculate both percent turnout and percent broadband access. The latter we calculated under the assumption that broadband connections can represent a one member household, dividing it by the county population. This value may not be the only way to calculate broadband access as it does not consider multi-member households or public broadband services, but because we had limited data sources for broadband access, we opted to set our own definition for the purpose of this project.
+
+Since the files we used were robust and well-organized, we were not concerned about missing values. Any extraneous variables were filtered out easily. Because the values we were given were plausible in this context, we did not need to account for extreme outliers while analyzing and plotting the data. The columns we added and/or calculated suited the needs of our analysis so that they also serve to validate both of our final datasets.
+
+## Methods
+The analysis revolved around investigating the potential impact of broadband access on voter turnout, employing a selection of key variables for analysis. These variables encompassed 'Year,' delving into a comparative study of voter turnout and broadband availability in the years 2016 and 2020. 'Broadband Availability Percentage' served as a metric to gauge the correlation between broadband access and voter turnout, while 'Statewide Voter Turnout' was crucial in comprehending the voter engagement percentages across various states. The focus zoomed onto Washington state for a detailed breakdown, narrowing the analysis to counties and state-specific data within this region.
+
+To facilitate this investigation, multiple datasets were aggregated using the 'read.csv' function and merged, consolidating information related to broadband access, voter turnout, and specific state details. The merging process relied on common identifiers like county or state, creating a comprehensive dataset conducive to exploring relationships. This dataset underwent refining by filtering out specific rows, such as those representing Puerto Rico, to maintain a geographic focus on states and counties relevant to the analysis. 
+To ensure the accuracy and consistency of the data, variable transformations were executed. Variables like 'TOTAL_BALLOTS_COUNTED' and 'VAP' underwent conversion into numeric formats, facilitating subsequent calculations and statistical analyses.
+
+The analytical approach encompassed a nationwide scope, examining all US states while channeling a concentrated effort toward Washington state. Here, an exploration of county-level data provided deeper insights into the correlation between broadband access and voter turnout.
+
+The core of the analysis was rooted in employing fundamental statistical methodologies. Visual representations, predominantly scatterplots, were instrumental in illustrating the relationship between broadband access and voter turnout. Additionally, the utilization of linear regression models, depicted through 'geom_smooth,' further elucidated trends and assessed the strength of the relationship between these variables. These methods collectively enabled a comprehensive examination of the hypothesized impact of broadband accessibility on voter engagement and participation, particularly within the context of electoral turnouts.
+
+## Results
+Through an in-depth analysis of broadband access on voter turnout across the United States, we have found a positive correlation between the two variables. After analyzing the given data and visualizing their trends on different types of graphs such as scatter plots, bar graphs, and heat maps, we found that the correlation between broadband access and voter engagement was positive but weaker than anticipated.
+
+```{r Pre-Processing, echo= TRUE}
+## Pre-Processing
+
+# INSTALL PACKAGES - run each line below once
+## install.packages('tidyverse')
+## install.packages('devtools')
+## devtools::install_github("UrbanInstitute/urbnmapr")
+
+#####################
+
+# load libraries
+
+library(urbnmapr)
+library(tidyverse)
+
+# load datasets (change file paths as needed)
+
+## US states data
+vote2020 <- read.csv("2020_voter_turnout.csv")
+vote2016 <- read.csv("2016_voter_turnout.csv")
+broad2020 <- read.csv("broadband_2020_good_!.csv")
+broad2016 <- read.csv("broadband_2016_good.csv")
+regions <- regions <- read.csv("regions.csv")
+
+## WA counties data
+wabroad <- read.csv("wabroadband.csv")
+vap16 <- read.csv("vap2016.csv")
+vap20 <- read.csv("vap2020.csv")
+waturnout <- read.csv("waturnout.csv")
+```
+
+
+```{r US voter turnout data, echo= TRUE}
+
+voting_turnout_2020 <- vote2020 %>%
+  select(STATE, STATE_ABV, TOTAL_BALLOTS_COUNTED, VAP) %>%
+  mutate(YEAR = 2020)
+
+voting_turnout_2016 <- vote2016 %>%
+  select(STATE, STATE_ABV, TOTAL_BALLOTS_COUNTED, VAP) %>%
+  mutate(YEAR = 2016)
+
+election_comparison <- rbind(voting_turnout_2020, voting_turnout_2016) %>%
+  filter(STATE != "United States") %>%
+  select(STATE, TOTAL_BALLOTS_COUNTED, VAP, YEAR) %>%
+  mutate(TOTAL_BALLOTS_COUNTED = as.numeric(str_replace_all(TOTAL_BALLOTS_COUNTED, ",", "")),
+         VAP = as.numeric(str_replace_all(VAP, ",", "")),
+         percent_turnout = TOTAL_BALLOTS_COUNTED / VAP * 100,
+         STATE = str_replace_all(STATE, "\\*", ""))
+```
+
+```{r US broadband access data, echo= TRUE}
+
+broadband_2020 <- broad2020 %>%
+  mutate(YEAR = 2020) %>%
+  filter(STATE != "Puerto Rico")
+
+broadband_2016 <- broad2016 %>%
+  mutate(YEAR = 2016) %>%
+  filter(STATE != "Puerto Rico")
+
+broadband_data <- rbind(broadband_2016, broadband_2020) %>%
+  arrange(STATE)
+```
+
+```{r Merge voter turnout and broadband data + add regions (categorical variable), echo= TRUE}
+
+voter_broadband <- merge(broadband_data, election_comparison, by =c("STATE", "YEAR")) %>%
+  merge(regions, by.x="STATE", by.y="State")
+```
+
+```{r  Final states voter turnout + broadband dataset with map data, echo= TRUE}
+
+vb_map <- states %>%
+  merge(voter_broadband, by.x="state_name", by.y="STATE")
+```
+
+```{r Clean WA counties broadband access data, echo= TRUE}
+
+years = c(2016, 2020)
+
+wabroadband <- wabroad %>%
+  filter(Year %in% years, State_Name == "Washington", Month == 12) %>%
+  mutate(county_fips = FIPS, year = Year, county_name = County_Name) %>%
+  select(year = Year, county_name = County_Name, connections = Housing_Units)
+```
+
+```{r Clean voting age population data, echo= TRUE}
+
+vap2016 <- vap16 %>%
+  select(county_name = Label..Grouping., votingpop = CITIZEN..VOTING.AGE.POPULATION..Citizen..18.and.over.population, population = SEX.AND.AGE..Total.population) %>%
+  mutate(year = 2016)
+
+vap2020 <- vap20 %>%
+  select(county_name = Label..Grouping., votingpop = CITIZEN..VOTING.AGE.POPULATION..Citizen..18.and.over.population, population = SEX.AND.AGE..Total.population) %>%
+  mutate(year = 2020)
+
+wavap <- vap2020 %>%
+  rbind(vap2016) %>%
+  mutate(county_name = ifelse(str_detect(county_name, "Estimate"), lag(county_name), county_name)) %>%
+  filter(str_detect(votingpop, "[0-9]"), str_detect(county_name, "County")) %>%
+  filter(county_name != "Washington") %>%
+  mutate(county_name = str_replace(county_name, ", Washington", ""),
+         votingpop = as.integer(str_replace_all(votingpop, ",", "")),
+         population = as.integer(str_replace_all(population, ",", "")))
+
+wacountymap <- counties %>%
+  filter(state_abbv == "WA") %>%
+  select(!c(state_abbv, state_fips, fips_class, state_name))
+```
+
+```{r Add voter turnout rate (numerical variable), echo= TRUE}
+watotalturnout <- waturnout %>%
+  filter(state == "WASHINGTON", year %in% years) %>%
+  mutate(county_name = paste(str_to_title(county_name), "County")) %>%
+  select(year, county_name, total_turnout = totalvotes) %>%
+  distinct()
+
+waturnoutrate <- wavap %>%
+  merge(watotalturnout, by=c("year", "county_name")) %>%
+  mutate(percent_turnout = total_turnout / votingpop * 100)
+
+
+## Merge broadband and county geography data
+## Final WA counties voter turnout + broadband dataset without map data
+wa_voter_broadband <- wabroadband %>%
+  merge(waturnoutrate, by=c("year", "county_name")) %>%
+  mutate(Broad_access = connections / population * 100)
+
+## Final WA counties voter turnout + broadband dataset with map data
+wa_vb_map <- wa_voter_broadband %>%
+  merge(wacountymap, by="county_name")
+```
+## RQ 1: How are changes in broadband access reflected in changes in statewide voter turnout results from 2016 to 2020?
+Looking at just the maps, there is a small correlation between voter turnout (% of eligible voters that participated in an election) and broadband access (percentage of households with broadband connections) in some regions of the U.S such as the South and the Midwest, which have lower broadband access and lower voter turnout across the 2016 and 2020 elections. 
+
+### Heatmap: Voter Turnout Rates 2016 vs. 2020
+
+```{r Heatmap: Voter Turnout Rates 2016 vs. 2020, echo= TRUE}
+vb_map %>%
+  ggplot(aes(long, lat)) + 
+  geom_polygon(aes(group = group, fill=percent_turnout), color="white") +
+  scale_fill_gradient(low = "yellow", high = "darkred") +
+  coord_quickmap() +
+  facet_wrap(~YEAR) +
+  labs(title = "US Voter Turnout 2016 vs. 2020", fill = "Voter Turnout (%)")
+```
+
+### Heatmap: Broadband Access Rates 2016 vs. 2020
+
+```{r Heatmap: Broadband Access Rates 2016 vs. 2020, echo= TRUE}
+vb_map %>%
+  ggplot() + 
+  geom_polygon(aes(long, lat, group = group, fill = Broad_access), color = "white") +
+  scale_fill_gradient(low = "yellow", high = "darkblue") +
+  coord_quickmap() +
+  facet_wrap(~YEAR) +
+  labs(title = "US Broadband Access 2016 vs. 2020",
+       fill = "Broadband Access (%)")
+```
+
+### Scatterplot: US Broadband Access vs Voter Turnout
+Our scatter graph comparing statewide broadband accessibility (%) with state voter participation (%) demonstrates a positive correlation: as broadband availability rises, so does voter engagement in these states. This relationship is reinforced by the linear regression analysis, which shows a gently upward-trending line, affirming the connection between increasing broadband access and higher voter turnout. 
+
+```{r Scatterplot: US Broadband Access vs Voter Turnout, echo= TRUE}
+ggplot(voter_broadband, aes(x = Broad_access, y = percent_turnout)) +
+  geom_point(aes(color = factor(YEAR)), size = 3) +
+  geom_smooth(method = "lm", se = FALSE) +
+  labs(
+    x = "Broadband Access (%)",
+    y = "State Voter Turnout (%)",
+    title = "State Broadband Access Vs Voter Turnout"
+  ) +
+  scale_color_discrete(name = "Year") +
+  theme_minimal()
+```
+
+## RQ 2: How do the top five and bottom 5 broadband access states compare in terms of voter turnout?
+The top five broadband access states in 2016 had an average voter turnout of 70%, and in 2020, the top five broadband access states had an average voter turnout of 82%. In contrast, the bottom five broadband access states in 2016 had an average voter turnout of 52% and in 2020, 57%. These numbers suggest a large difference in voter turnout between high broadband states vs low broadband states.
+
+### Average Turnout in Top 5 and Bottom 5 Broadband Access States
+
+```{r Average Turnout in Top 5 and Bottom 5 Broadband Access States, echo= TRUE}
+voter_broadband %>%
+  group_by(YEAR) %>%
+  filter(rank(desc(Broad_access), ties.method = "first") <= 5) %>%
+  summarize(highest5_avg_turnout = mean(percent_turnout))
+
+voter_broadband %>%
+  group_by(YEAR) %>%
+  filter(rank(Broad_access, ties.method = "first") <= 5) %>%
+  summarize(lowest5_avg_turnout = mean(percent_turnout))
+```
+
+## RQ 3: What regional patterns do we find across broadband access and voter turnout?
+
+### Bar Graph: Regional Voter Turnout Vs. Broadband Access
+Our bar graph compares broadband access (%) versus voter turnout (%) across various US regions: South, West, Midwest, and Northeast. Based on this visualization, all of the regions have roughly the same level of broadband access and voter turnout, however, we can also see that states in the South have a slightly lower percentage of broadband availability, with a correlating dip in voter turnout. Although the connection is weak, it can be inferred that access to broadband does play a role in voter engagement. This can be attributed to a multitude of socioeconomic factors, such as certain US regions being rural versus urban.
+
+```{r Bar Graph: Regional Voter Turnout Vs. Broadband Access, echo= TRUE}
+region_avg <- voter_broadband %>%
+  group_by(Region) %>%
+  summarise(broadband = mean(Broad_access),
+            voter_turnout = mean(percent_turnout)) %>%
+  pivot_longer(!Region, names_to = "average_type", values_to = "value")
+
+ggplot(region_avg, aes(Region, value, fill = average_type)) +
+  geom_bar(stat = "identity", position = "dodge", alpha = 0.8) +
+  labs(
+    x = "Region",
+    y = "Average Percentage (%)",
+    title = "Average Voter Turnout vs Broadband Access Across US Regions",
+    fill = "Average Percentage (%)"
+    ) +
+  theme_minimal() +
+  scale_fill_brewer(palette = "Set1")
+```
+
+### Heatmaps: Regional Voter Turnout vs Broadband Access
+When focusing our analysis on regions, we find that the South and areas within the Midwest/West have lower broadband rates consistent with lower voter turnout rates. However, this relationship is not immediately apparent, suggesting a weaker correlation.
+
+```{r Heatmaps: Regional Voter Turnout vs Broadband Access, echo= TRUE}
+vb_map %>%
+  ggplot() + 
+  geom_polygon(aes(long, lat, group = group, fill = Broad_access), color = "white") +
+  scale_fill_gradient(low = "yellow", high = "darkblue") +
+  coord_quickmap() +
+  facet_wrap(c("Region", "YEAR")) +
+  labs(title = "US Broadband Access 2016 vs. 2020", fill = "Broadband Access (%)")
+
+vb_map %>%
+  ggplot() + 
+  geom_polygon(aes(long, lat, group = group, fill=percent_turnout), color = "white") +
+  scale_fill_gradient(low = "yellow", high = "darkred") +
+  coord_quickmap() +
+  facet_wrap(c("Region", "YEAR")) +
+  labs(title = "US Voter Turnout 2016 vs. 2020", fill = "Voter Turnout (%)")
+```
+
+
+## RQ 4: Is there a relationship between broadband access and voter turnout in Washington counties?
+Looking at just these maps, it is difficult to find a strong correlation between changes in broadband access vs. voter turnout. Broadband access did not improve much between the years 2016 and 2020, despite voter turnout increasing between the 2016 and 2020 elections.
+
+### Heatmap: WA Counties Voter Turnout
+
+
+```{r Heatmap: WA Counties Voter Turnout, echo= TRUE}
+wa_vb_map %>%
+  ggplot() + 
+  geom_polygon(aes(long, lat, group = group, alpha=percent_turnout), fill = "darkgreen", color = "white") +
+  coord_quickmap() +
+  facet_wrap(~year) +
+  labs(title = "Washington Counties Voter Turnout 2016 vs. 2020", alpha = "Voter Turnout (%)")
+```
+
+
+### Heatmap: WA Counties Broadband Access
+
+```{r Heatmap: WA Counties Broadband Access, echo= TRUE}
+wa_vb_map %>%
+  ggplot() + 
+  geom_polygon(aes(long, lat, group = group, alpha=Broad_access), fill = "darkblue", color = "white") +
+  coord_quickmap() +
+  facet_wrap(~year) +
+  labs(title = "Washington Counties Broadband Access 2016 vs. 2020", alpha = "Broadband Access (%)")
+```
+
+### Average Turnout in Top 5 and Bottom 5 Broadband Access Counties
+The top five broadband counties had an average voter turnout of 70% in 2016 and 82% in 2020, while the bottom five broadband counties had an average voter turnout of 56% in 2016 and 69% in 2020, which suggests a large difference in voter turnout in high broadband counties vs low broadband counties.
+
+```{r Average Turnout in Top 5 and Bottom 5 Broadband Access Counties, echo= TRUE}
+wa_voter_broadband %>%
+  group_by(year) %>%
+  filter(rank(desc(Broad_access), ties.method = "first") <= 5) %>%
+  summarize(top5_avg_turnout = mean(percent_turnout))
+
+wa_voter_broadband %>%
+  group_by(year) %>%
+  filter(rank(Broad_access, ties.method = "first") <= 5) %>%
+  summarize(bottom5_avg_turnout = mean(percent_turnout))
+```
+
+# DISCUSSION
+
+Considering our analysis altogether, we find a weak positive correlation between voter turnout and broadband access. We found that across regions, the South and the Midwest experience slightly lower broadband access and voter turnout. This aligned with some of our expectations as we typically see the South and the Midwest (among other states in the West that do not fall along the coast) having rural subregions. Within Washington, we find a similarly weak positive correlation between broadband access and voter turnout, though these patterns did not align with our expectations as even highly urbanized counties along the Puget Sound had similar broadband access and voter turnout rates as rural counties in Eastern Washington.
+
+This suggests that broadband access and voter turnout have a far more complex relationship than we first assumed. More than just a matter of rural vs. urban, this relationship may be subject to a variety of confounding variables. Some of these variables may be socioeconomic. De facto segregation of housing may be one such example, as African-American and Hispanic neighborhoods are historically lower-income, meaning that broadband access and election participation may be luxuries that are harder to obtain or make time for. Age may also be confounding factor as each generation becomes more digitally literate than the last.
+
+Confounding factors may also include changes in our political landscape. Our samples were taken from two highly polarized presidential elections, which might have had a dual impact on voter turnout in addition to voters’ reliance on digital information technologies. Restrictive voting laws also vary from state to state, which may create further discrepancies in the broadband vs. voter turnout relationship. Not to mention how the pandemic might impact election processes moving forward.
+
+All of this is to say that the relationship between broadband access and voter turnout should not be ruled out despite finding a weak relationship. Each of the factors we mentioned, among others, should be factored into future analysis that aims to explore this relationship. Future projects can extend our analysis to include more subregions and counties so that these relationships can be further solidified.
+Summary
+In conclusion, while broadband access has expanded significantly, the digital divide persists in creating information disparities that impact voter turnout. This analysis underscores a positive correlation between these variables and suggests a nuanced relationship between broadband access and voter turnout, emphasizing the need for a multi-perspective approach in future work.
+
+We saw slight regional differences, but through our analysis of Washington counties, we saw that it may not be as simple as an issue of rural vs. urban communities. Our results suggest that broadband access and voter turnout share a positive correlation that future projects should strive to dissect through other lenses such as socioeconomic disparities, political shifts, and even the short-term/long-term effects of the pandemic.
+
+As our country becomes more reliant on digital information technologies in our everyday lives, the digital divide remains a pressing concern for service providers to address. If broadband service providers fail to expand their networks towards underserviced or low-income regions, communities with limited broadband access face significant barriers to carrying out their civic duties, making this concern relevant not just to service providers but also to policymakers and eligible voters. 
+
+We hope that our data analysis initiates a necessary conversation about the efforts being made to understand the relationship between broadband access and voter turnout and the future implications for such work. Here, we seek to convince policymakers and service providers that this issue deserves to be addressed so that we can continue to support a functioning democracy. We also hope that our final datasets also assist future projects examining this topic in the U.S. as well as within Washington. As we compiled and processed datasets, we saw that existing data is abundant but also requires extensive cleaning in order to make connections between broadband access and voter turnout patterns. Thus, our methods utilized a mix of filtering, variable transformations, and statistical analysis to make the data easier for us and future researchers to work with. We applied a similar process to our Washington data, which may be more relevant to local policymakers and providers. Overall, we hope that this analysis may provide the foundation for future projects to devise new methods and approaches to creating equitable outcomes for each and every citizen in the digital era.
+
+
+```
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## R Markdown
+
+This is an R Markdown document. Markdown is a simple formatting syntax for authoring HTML, PDF, and MS Word documents. For more details on using R Markdown see <http://rmarkdown.rstudio.com>.
+
+When you click the **Knit** button a document will be generated that includes both content as well as the output of any embedded R code chunks within the document. You can embed an R code chunk like this:
+
+```{r cars}
+summary(cars)
+```
+
+## Including Plots
+
+You can also embed plots, for example:
+
+```{r pressure, echo=FALSE}
+plot(pressure)
+```
+
+Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.
