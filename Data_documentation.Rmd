@@ -31,7 +31,7 @@ Voting age population of Washington state,  2020
 Voting turnout, Washington state
 
 ## Variables
-### US:
+### US: final_united_states_vb_data.csv
 
 - Year: year of election or broadband study.
 - State: State of data collection, United States.
@@ -42,14 +42,14 @@ Voting turnout, Washington state
 - Division: geographic subregion of the U.S.
 - percent_turnout: percentage of voter turnout
 
-### WA:
+### WA: final_WAcounties_vb_data.csv
 
 - year: year of election or broadband study
 - county_name: county in WA
 - connections: total broadband connections
 - votingpop: voting age population
 - population: population of county
-- total_turnout: ballots/votes counted from the county
+- total_turnout: ballots/votes counted from each county
 - percent_turnout: percentage rate of voter turnout
 - Broad_access: broadband access as a percentage
 
